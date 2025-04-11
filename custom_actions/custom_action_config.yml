@@ -1,0 +1,27 @@
+pcc:
+  url: https://IP:9999
+  username: admin
+  password: PWD
+
+workflow:
+  description: A VALUABLE DESCRIPTION
+  nodes_bmc:
+    - 10.1.0.5-10.1.0.8
+  pxe: true
+  reboot: false
+  userActions:
+    globalTimeout: 3600000
+    actions:
+      - name: A VALUABLE NAME
+        image: IMAGE NAME
+        repository: ""
+        user: ""
+        password: ""
+        timeout: 3600000
+        environment:
+          ACTION: diagnostic
+    volumes:
+      - /dev:/dev
+      - /sys:/sys
+      - /var/run/docker.sock:/var/run/docker.sock
+
