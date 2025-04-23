@@ -5,12 +5,9 @@ import yaml
 import sys
 import os
 import requests
-import urllib3
 from pyfiglet import Figlet
 
-from custom_action import CustomAction
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from platina.custom_action import CustomAction
 
 session_token = None
 

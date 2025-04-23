@@ -1,7 +1,7 @@
 import sys
 import requests
 import json
-from node import Node
+from .node import Node
 
 
 class CustomAction(Node):

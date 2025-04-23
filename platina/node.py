@@ -2,7 +2,7 @@ import ipaddress
 import requests
 import urllib3
 
-from base import Base
+from .base import Base
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
