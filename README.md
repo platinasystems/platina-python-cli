@@ -1,1 +1,1 @@
-# scripts
+# platina-python-cli 
