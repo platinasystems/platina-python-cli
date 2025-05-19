@@ -26,7 +26,7 @@ class Node(Base):
                 result.add(entry.strip())
         return sorted(result, key=lambda ip: ipaddress.IPv4Address(ip))
 
-    def get_nodes_from_bmc(self, ip_list):
+    def get_node_ids_from_bmc(self, ip_list):
         node_ids = list()
         unique_ips = self.parse_ip_list(ip_list)
         try:
@@ -42,3 +42,20 @@ class Node(Base):
                 node_ids.append(node['Id'])
 
         return node_ids
+
+    def get_nodes_from_bmc(self, ip_list):
+        nodes_to_ret = list()
+        unique_ips = self.parse_ip_list(ip_list)
+        try:
+            response = requests.get(f"{self.get_pcc_url()}/pccserver/node", headers=self.get_headers(), verify=False)
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Connection error: {e}")
+            exit(1)
+
+        nodes = response.json()['Data']
+
+        for node in nodes:
+            if node.get('bmc', '') in unique_ips:
+                nodes_to_ret.append(node)
+
+        return nodes_to_ret

@@ -1,16 +1,28 @@
 # 🛠 Platina CLI tool
-This command runs the custom_action.py script using the configuration provided in a yaml file.
-It executes a custom action or diagnostic task defined in the YAML file, typically including parameters such as timeouts, environment variables, selected nodes, and container image details.
+A command-line interface for executing operations on PCC (Platina Control Center), including automation tasks, diagnostics, and provisioning.
 
 
-## Custom action
-```python
-platina-cli --operation custom-action --config custom_action_config.yml
+## Build
+To build a standalone executable using PyInstaller:
+```bash
+pyinstaller --onefile \
+  --add-data "$(python -c 'import pyfiglet; import os; print(os.path.dirname(pyfiglet.__file__) + "/fonts:pyfiglet/fonts")')" \
+  platina-cli.py
+```
+
+## Operations
+
+### Custom action
+Executes a custom action or diagnostic workflow defined in a YAML configuration file.
+Typical usage includes specifying timeouts, environment variables, node selections, and container image details.
+
+```shell
+platina-cli --operation custom-action --config config.yml
 ```
 
 
-custom_action_config.yml
-```aiignore
+config.yml
+```yaml
 pcc:
   url: https://IP:9999
   username: admin
@@ -38,4 +50,33 @@ custom_action:
         - /dev:/dev
         - /sys:/sys
         - /var/run/docker.sock:/var/run/docker.sock
+```
+
+### Allow nodes to be prepared for Bare Metal deployment
+```shell
+platina-cli --operation node-bare-metal-ready --config config.yml
+```
+
+config.yml
+```yaml
+pcc:
+  url: https://IP:9999
+  username: admin
+  password: PWD
+
+bare_metal:
+  nodes_bmc:
+    - 10.10.10.1-10.10.10.5
+    - 10.10.10.7
+  console: ttyS1
+  managed: False
+  management_interface:
+    subnet: 10.10.11.0/24
+    gateway: 10.10.11.254
+    properties:
+      speed: 1000
+      carrierStatus: UP
+  bootable_drive:
+    properties:
+      TypeLabel: Hardware RAID
 ```

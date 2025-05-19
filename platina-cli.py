@@ -8,6 +8,7 @@ import requests
 from pyfiglet import Figlet
 
 from platina.custom_action import CustomAction
+from platina.bare_metal import BareMetal
 
 session_token = None
 
@@ -58,7 +59,7 @@ def main():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--config', type=str, required=True,help='Path to YAML config file')
     parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
-    parser.add_argument('--operation', type=str, choices=['custom-action'], required=True, help='Operation type to execute')
+    parser.add_argument('--operation', type=str, required=True, help='Operation type to execute')
 
     args = parser.parse_args()
 
@@ -69,7 +70,8 @@ def main():
     auth(config)
 
     operations = {
-        'custom-action': CustomAction(session_token, config).execute_action(),
+        'custom-action': CustomAction(session_token, config).execute_action,
+        'node-bare-metal-ready': BareMetal(session_token, config).make_ready,
     }
 
     operation_fn = operations.get(args.operation)

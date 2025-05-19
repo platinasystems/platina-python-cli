@@ -1,0 +1,20 @@
+pcc:
+  url: https://IP:9999
+  username: admin
+  password: PWD
+
+bare_metal:
+  nodes_bmc:
+    - 10.1.0.5-10.1.0.8
+    - 10.1.0.7
+  console: ttyS1
+  managed: False
+  management_interface:
+    subnet: 10.1.1.0/24
+    gateway: 10.1.1.254
+    properties:
+      speed: 1000
+      carrierStatus: UP
+  bootable_drive:
+    properties:
+      TypeLabel: Hardware RAID

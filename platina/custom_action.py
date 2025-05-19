@@ -10,7 +10,7 @@ class CustomAction(Node):
     def execute_action(self):
         workflow = self.config['custom_action']['workflow']
 
-        node_ids = self.get_nodes_from_bmc(workflow['nodes_bmc'])
+        node_ids = self.get_node_ids_from_bmc(workflow['nodes_bmc'])
         if len(node_ids) == 0:
             print(f"❌ Nodes not found")
             sys.exit(1)
