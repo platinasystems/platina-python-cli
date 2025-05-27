@@ -9,6 +9,7 @@ from pyfiglet import Figlet
 
 from platina.custom_action import CustomAction
 from platina.bare_metal import BareMetal
+from platina.node import Node
 
 session_token = None
 
@@ -58,8 +59,9 @@ def main():
     parser = argparse.ArgumentParser(description="🛠 Platina CLI tool for managing PCC",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--config', type=str, required=True,help='Path to YAML config file')
-    parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
     parser.add_argument('--operation', type=str, required=True, help='Operation type to execute')
+    parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
+    parser.add_argument('--bmc-ips', type=str, required=False, help='Comma-separated list of BMC IPs')
 
     args = parser.parse_args()
 
@@ -74,6 +76,7 @@ def main():
         'node-bare-metal-ready': BareMetal(session_token, config).make_ready,
         'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
         'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
+        'node-reboot': lambda: Node(session_token, config).reboot(bmc_ips=args.bmc_ips.split(',')),
     }
 
     operation_fn = operations.get(args.operation)

@@ -59,3 +59,14 @@ class Node(Base):
                 nodes_to_ret.append(node)
 
         return nodes_to_ret
+
+    def reboot(self, bmc_ips):
+        node_ids = self.get_node_ids_from_bmc(bmc_ips)
+
+        for node_id in node_ids:
+            print(f"Rebooting node {node_id}")
+            try:
+                response = requests.post(f"{self.get_pcc_url()}/pccserver/node/{node_id}/reboot", headers=self.get_headers(), verify=False)
+                response.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                print(f"❌ Connection error: {e}")
