@@ -72,6 +72,8 @@ def main():
     operations = {
         'custom-action': CustomAction(session_token, config).execute_action,
         'node-bare-metal-ready': BareMetal(session_token, config).make_ready,
+        'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
+        'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
     }
 
     operation_fn = operations.get(args.operation)

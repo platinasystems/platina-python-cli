@@ -49,8 +49,67 @@ class BareMetal(Node):
         print(f"Unable to find the the boot drive for node {node_id}")
         return None
 
+    # Makes nodes discovered
+    def discovery(self):
+        discovery_request = self.config['bare_metal']['discovery']
+        try:
+            response = requests.post(f"{self.get_pcc_url()}/pccserver/v2/bare-metal/discovery", json = discovery_request, headers=self.get_headers(), verify=False)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Connection error: {e}")
+            sys.exit(1)
 
-    # Makes nodes ready fro bare Metal deployment
+        if response.status_code != 200:
+            print(f"❌ Request failed with status {response.status_code}")
+            print(response.text)
+            sys.exit(1)
+
+
+        print("\n✅ Nodes have been successfully prepared for Bare Metal discovery.")
+
+
+    # Makes nodes re-imaged
+    def reimage(self):
+        request = self.config['bare_metal']['reimage']
+        node_ids = self.get_node_ids_from_bmc(request['nodes_bmc'])
+        if len(node_ids) == 0:
+            print(f"❌ Nodes not found")
+            sys.exit(1)
+
+        del request['nodes_bmc']
+        request['nodes'] = node_ids
+
+        try:
+            response = requests.post(f"{self.get_pcc_url()}/pccserver/bare-metal", json = request, headers=self.get_headers(), verify=False)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Connection error: {e}")
+            sys.exit(1)
+
+        if response.status_code != 200:
+            print(f"❌ Request failed with status {response.status_code}")
+            sys.exit(1)
+
+
+        print("\n✅ Reimage operation successfully initiated for the nodes.")
+
+
+    def _generate_node_name(self, template: str,  bmc_ip: str) -> str:
+        """
+        Generate a name for the node
+
+        Args:
+            ip (str):
+            template (str):
+
+        Returns:
+            str: the node name
+        """
+        bmc_ip = bmc_ip.split('/')[0]
+        return eval(f"f'{template}'", {}, {"bmc_ip": bmc_ip, "int": int})
+
+
+    # Makes nodes ready for bare Metal deployment
     def make_ready(self):
         bm_config = self.config['bare_metal']
         nodes = self.get_nodes_from_bmc(bm_config['nodes_bmc'])
@@ -65,11 +124,15 @@ class BareMetal(Node):
         processed_nodes = []
         for node in nodes:
             node_id = node.get('Id')
+            node_name = ""
+            if 'node_name_template' in bm_config:
+                node_name = self._generate_node_name(bm_config['node_name_template'], node['bmc'])
             node_to_update = {
                 "nodeId": node_id,
-                "adminUser": "",
+                "adminUser": bm_config.get('admin_user', ''),
                 "managed": bm_config.get('managed', False),
                 "console": bm_config.get('console', 'ttyS1'),
+                "name": node_name,
             }
 
             # Set bootable drive

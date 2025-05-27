@@ -7,7 +7,7 @@ custom_action:
   workflow:
     description: A VALUABLE DESCRIPTION
     nodes_bmc:
-      - 10.1.0.5-10.1.0.8
+      - 10.1.0.1-10.1.0.5
     pxe: true
     reboot: false
     userActions:
