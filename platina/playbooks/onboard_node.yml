@@ -1,0 +1,44 @@
+---
+- name: Setup user 'pcc' on remote host
+  hosts: all
+  gather_facts: false
+  become: true
+  vars:
+    public_ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDI5e+Yd94nmjfXK1aYZJTCRiciM/NAMPNTKe13mFNeyyLHS6fGqUPzqPOBxqav1QoxuRpge4xozV4t6ja1VcBgqxAoEMt3zHhS5sx76+2q2GGmlO1WPeqhtD/cBWCi7DdVmOcIQA1JfYSURISHUl31mAjaJV91bS214XkXhONaWVh0js0HOadZKm+BRRwBfeFDTaDxEkprVPe/kl9SOxECgzTS+JJ7Cl06qj1I1TrL0JInZIo0yjKnLVwtR4iuBTC7fqM3FaYj52W975xRpzqsEDNpiDN6Z/pE7xoO4XB7IlFixoZVLoLJPIxGaNMGOfn3xCaysd7e4fW2kNJVN+1T+Y4ozhDr0cs9zuVttTuxabtgC8h0zDQbd971bFgvmK9pQl95dwguqotbe5qc8ly0HIrbtV6Kip3ptZioxFQhaHP+Mq6g4e9w5wtrNlGlanVZGhpWl6r0hfrJl0AqT4EYcfrXURSpulbRruWgMsUXdz66MWebe0rQDQ4Ntwnh1zJe0M1ksuDABi0ivm21ogjbbsrVbL/P6HSBWwjs+NBMkBE6arey3QlKXvQDgsSWUA6V7rHGusAiORqyKyEZUnThL8wKYXy+ueFoMnr0qN78N9H7yrlzkVz+vLaUAKnb6Fj/rOLDgNO0XPGhhe6qtK6CuMZPLp0awyayQ61QbqZX5w== pcc@B020121-e82d1ae"
+    user_to_add: "pcc"
+
+  tasks:
+
+    - name: Show network interfaces
+      ansible.builtin.command: ip a
+      register: ip_output
+
+    - name: Print network interfaces
+      ansible.builtin.debug:
+        var: ip_output.stdout_lines
+
+    - name: "Ensure user {{ user_to_add }} exists"
+      ansible.builtin.user:
+        name: "{{ user_to_add }}"
+        shell: /bin/bash
+        create_home: true
+
+    - name: "Allow {{ user_to_add }} passwordless sudo"
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ user_to_add }}"
+        content: "{{ user_to_add }} ALL=(ALL) NOPASSWD:ALL\n"
+        mode: '0440'
+
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user_to_add }}/.ssh"
+        state: directory
+        owner: "{{ user_to_add }}"
+        group: "{{ user_to_add }}"
+        mode: '0700'
+
+    - name: "Add authorized key for {{ user_to_add }}"
+      ansible.builtin.authorized_key:
+        user: "{{ user_to_add }}"
+        key: "{{ public_ssh_key }}"
+        state: present

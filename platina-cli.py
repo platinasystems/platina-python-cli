@@ -10,6 +10,7 @@ from pyfiglet import Figlet
 from platina.custom_action import CustomAction
 from platina.bare_metal import BareMetal
 from platina.node import Node
+from platina.node_onboard import NodeOnboard
 
 session_token = None
 
@@ -62,6 +63,10 @@ def main():
     parser.add_argument('--operation', type=str, required=True, help='Operation type to execute')
     parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
     parser.add_argument('--bmc-ips', type=str, required=False, help='Comma-separated list of BMC IPs')
+    parser.add_argument('--node-ips', type=str, required=False, help='Comma-separated list of IPs')
+    parser.add_argument('--ssh-user', type=str, required=False, help='SSH username')
+    parser.add_argument('--ssh-pwd', type=str, required=False, help='SSH password')
+    parser.add_argument('--managed', type=bool, required=False, help='Managed flag', default=False)
 
     args = parser.parse_args()
 
@@ -77,6 +82,7 @@ def main():
         'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
         'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
         'node-reboot': lambda: Node(session_token, config).reboot(bmc_ips=args.bmc_ips.split(',')),
+        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, managed=args.managed),
     }
 
     operation_fn = operations.get(args.operation)

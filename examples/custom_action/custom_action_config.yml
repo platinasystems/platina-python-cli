@@ -5,19 +5,19 @@ pcc:
 
 custom_action:
   workflow:
-    description: A VALUABLE DESCRIPTION
+    description: action gc test
     nodes_bmc:
-      - 10.1.0.1-10.1.0.5
+      - 10.9.81.105
     pxe: true
     reboot: false
     userActions:
       globalTimeout: 3600000
       actions:
-        - name: A VALUABLE NAME
-          image: IMAGE NAME
-          repository: ""
-          user: ""
-          password: ""
+        - name: gc
+          image: platina.io/XXXXX:latest
+          repository: "platina.io"
+          user: "XXXX"
+          password: "XXXXX"
           timeout: 3600000
           environment:
             ACTION: diagnostic
@@ -25,4 +25,3 @@ custom_action:
         - /dev:/dev
         - /sys:/sys
         - /var/run/docker.sock:/var/run/docker.sock
-

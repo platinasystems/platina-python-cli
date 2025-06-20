@@ -1,6 +1,7 @@
 import ipaddress
 import requests
 import urllib3
+import sys
 
 from .base import Base
 
@@ -70,3 +71,16 @@ class Node(Base):
                 response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 print(f"❌ Connection error: {e}")
+
+    def add_node(self, ip, managed: bool = False, admin_user: str = 'pcc'):
+        node = {'host': ip, 'managed': managed, 'adminUser': admin_user}
+        try:
+            response = requests.post(f"{self.get_pcc_url()}/pccserver/node", headers=self.get_headers(), json=node, verify=False)
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Connection error: {e}")
+            sys.exit(1)
+
+        if response.status_code != 200:
+            print(f"❌ Request failed with status {response.status_code}")
+            sys.exit(1)
+
