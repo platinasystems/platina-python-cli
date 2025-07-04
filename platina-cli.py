@@ -66,6 +66,7 @@ def main():
     parser.add_argument('--node-ips', type=str, required=False, help='Comma-separated list of IPs')
     parser.add_argument('--ssh-user', type=str, required=False, help='SSH username')
     parser.add_argument('--ssh-pwd', type=str, required=False, help='SSH password')
+    parser.add_argument('--ssh-pub-key', type=str, required=False, help='SSH PUB key')
     parser.add_argument('--managed', type=bool, required=False, help='Managed flag', default=False)
 
     args = parser.parse_args()
@@ -82,7 +83,7 @@ def main():
         'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
         'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
         'node-reboot': lambda: Node(session_token, config).reboot(bmc_ips=args.bmc_ips.split(',')),
-        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, managed=args.managed),
+        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, ssh_pub_key=args.ssh_pub_key, managed=args.managed),
     }
 
     operation_fn = operations.get(args.operation)

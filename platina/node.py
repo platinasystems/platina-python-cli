@@ -25,7 +25,7 @@ class Node(Base):
                 result.update(self.expand_ip_range(start_ip.strip(), end_ip.strip()))
             else:
                 result.add(entry.strip())
-        return sorted(result, key=lambda ip: ipaddress.IPv4Address(ip))
+        return sorted(result, key=lambda ip: ipaddress.ip_address(ip))
 
     def get_node_ids_from_bmc(self, ip_list):
         node_ids = list()
