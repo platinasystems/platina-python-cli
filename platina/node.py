@@ -73,7 +73,9 @@ class Node(Base):
                 print(f"❌ Connection error: {e}")
 
     def add_node(self, ip, managed: bool = False, admin_user: str = 'pcc'):
-        node = {'host': ip, 'managed': managed, 'adminUser': admin_user}
+        if managed:
+            admin_user = ""
+        node = {'host': ip, 'managed': managed, 'adminUser': admin_user.strip(), 'roles': []}
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node", headers=self.get_headers(), json=node, verify=False)
         except requests.exceptions.RequestException as e:
@@ -81,6 +83,6 @@ class Node(Base):
             sys.exit(1)
 
         if response.status_code != 200:
-            print(f"❌ Request failed with status {response.status_code}")
+            print(f"❌ Request failed with status {response.status_code} {response}")
             sys.exit(1)
 

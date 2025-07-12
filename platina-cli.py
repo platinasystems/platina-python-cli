@@ -67,7 +67,7 @@ def main():
     parser.add_argument('--ssh-user', type=str, required=False, help='SSH username')
     parser.add_argument('--ssh-pwd', type=str, required=False, help='SSH password')
     parser.add_argument('--ssh-pub-key', type=str, required=False, help='SSH PUB key')
-    parser.add_argument('--managed', type=bool, required=False, help='Managed flag', default=False)
+    parser.add_argument('--managed', action='store_true', help='Managed flag')
 
     args = parser.parse_args()
 

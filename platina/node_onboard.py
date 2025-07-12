@@ -61,7 +61,8 @@ class NodeOnboard(Node):
                     f"STDOUT:\n{stdout_content}"
                 )
 
-            ssh_user = ""
+                raise RuntimeError(f"❌ Failed adding the node {ip} to PCC: {result.status} with RC {result.rc}")
+
 
         self.add_node(ip=ip, managed=managed, admin_user=ssh_user)
         print(f"Node added to PCC successfully with IP {ip}.")
