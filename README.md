@@ -137,3 +137,8 @@ custom_action:
 ```shell
 python3 platina-cli.py --config ./examples/bare_metal/bare_metal_config-gc.yml --operation node-onboard --ssh-pub-key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtHEZ2XNgOdNkABonoj49y8SMGMQtUbGNhglUyGlKf1ll4N5ha5iNTLSjRtuNhF2f6JZssB/94+LhkoiEXLJ5QuhWO+vcO3ZjL43TzYLnI4BP4hsGc+TDGhDALq/XbYblyAukQttn4qHVPlCYxR7MJJj2dorwPZHsYZ6B7fWR869uF7ZkV/XRWq4bbvvKadQeqzS63mjrmLFJ6/rMLfO5XtXEYwgVNMcxhsRC1DPm2oeWAgpGYlMoMYK0PYVmbFGQlQ3+UWa2KuG9tojdYruD2YD1yT5aKYsIKra61lqxWMPfGsuvXnFLl4jgHSYYqbEV1DjQpCWr3qNIvhbuB6nUtZxYkCsDZveNs8Wz7Q3Dc1a6mLy6MV9+UdvJyd8+3N6HFF62pR83mrRbhmKQbBEBFQ6nJCGQi8JrQuFP2aY2A/s0bQ4pbilkJO+8TkG8JkFtgyZIb8bPRB1LU7GpXV82fjq+n0BiV1V+Dxav5Ux4w4Bb6jkBTJJkZx3WAyirtFak= pcc@B020211-66f52a4" --ssh-user cachengo --ssh-pwd m --managed --node-ips
 ```
+
+### Prepare node
+```shell
+python3 platina-cli.py --config /home/gicamm/workspace/platina/platina-python-cli/examples/bare_metal/bare_metal_config-gc.yml --operation node-prepare --ssh-pub-key "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFsI/EBgi9HGIfq57DnbcEKPxJPiGFawV9GM5FvARJHA cammarata.giovanni@gmail.com" --ssh-user cachengo --ssh-pwd m --ssh-private-key /home/gicamm/.ssh/id_ed25519 --managed --node-ips 172.29.0.109-172.29.0.116
+```

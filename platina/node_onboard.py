@@ -10,7 +10,7 @@ class NodeOnboard(Node):
         self.session_token = session_token
         self.config = config or {}
 
-    def onboard(self, ips, ssh_user, ssh_pwd, ssh_pub_key, managed):
+    def onboard(self, ips, ssh_user, ssh_pwd, ssh_pub_key, ssh_private_key, managed: bool = True, add_to_pcc: bool = True):
         import concurrent.futures
         ips = self.parse_ip_list(ips)
 
@@ -18,8 +18,8 @@ class NodeOnboard(Node):
             ip = ip.strip()
             print(f"Adding the node with IP {ip} to PCC...")
             try:
-                self.onboard_node(ip=ip, ssh_user=ssh_user, password=ssh_pwd, ssh_pub_key=ssh_pub_key, managed=managed)
-            except RuntimeError as e:
+                self.onboard_node(ip=ip, ssh_user=ssh_user, password=ssh_pwd, ssh_private_key=ssh_private_key, ssh_pub_key=ssh_pub_key, managed=managed, add_to_pcc = add_to_pcc)
+            except Exception as e:
                 print(f"❌ Failed to onboard node {ip}: {e}")
             else:
                 print(f"✅ Node {ip} onboarded successfully.")
@@ -28,7 +28,7 @@ class NodeOnboard(Node):
             executor.map(onboard_single, ips)
 
 
-    def onboard_node(self, ip: str, ssh_user: str, password: str, ssh_pub_key:str, managed: bool = False):
+    def onboard_node(self, ip: str, ssh_user: str, password: str, ssh_private_key:str, ssh_pub_key:str, managed: bool = False, add_to_pcc: bool = True):
 
         if managed and ssh_user and ssh_user.strip() != "":
             print(f"Preparing the node with IP {ip} ...")
@@ -37,6 +37,7 @@ class NodeOnboard(Node):
                 "ansible_host": ip,
                 "ansible_password": password,
                 "ansible_become_password": password,
+                "ansible_ssh_private_key_file": ssh_private_key if ssh_private_key.strip() else None,
                 "user_to_add": 'pcc',
                 "ansible_ssh_common_args": "-o StrictHostKeyChecking=no"
             }
@@ -63,6 +64,6 @@ class NodeOnboard(Node):
 
                 raise RuntimeError(f"❌ Failed adding the node {ip} to PCC: {result.status} with RC {result.rc}")
 
-
-        self.add_node(ip=ip, managed=managed, admin_user=ssh_user)
-        print(f"Node added to PCC successfully with IP {ip}.")
+        if add_to_pcc:
+            self.add_node(ip=ip, managed=managed, admin_user=ssh_user)
+            print(f"Node added to PCC successfully with IP {ip}.")

@@ -66,6 +66,7 @@ def main():
     parser.add_argument('--node-ips', type=str, required=False, help='Comma-separated list of IPs')
     parser.add_argument('--ssh-user', type=str, required=False, help='SSH username')
     parser.add_argument('--ssh-pwd', type=str, required=False, help='SSH password')
+    parser.add_argument('--ssh-private-key', type=str, required=False, help='SSH Private key')
     parser.add_argument('--ssh-pub-key', type=str, required=False, help='SSH PUB key')
     parser.add_argument('--managed', action='store_true', help='Managed flag')
 
@@ -75,7 +76,8 @@ def main():
     if args.verbose:
         print("✅ Loaded config:", config)
 
-    auth(config)
+    if args.operation not in ['node-prepare']:
+        auth(config)
 
     operations = {
         'custom-action': CustomAction(session_token, config).execute_action,
@@ -83,7 +85,8 @@ def main():
         'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
         'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
         'node-reboot': lambda: Node(session_token, config).reboot(bmc_ips=args.bmc_ips.split(',')),
-        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, ssh_pub_key=args.ssh_pub_key, managed=args.managed),
+        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, managed=args.managed),
+        'node-prepare': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, add_to_pcc=False),
     }
 
     operation_fn = operations.get(args.operation)
