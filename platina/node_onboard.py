@@ -1,6 +1,9 @@
+from pathlib import Path
+import shutil
+
 import ansible_runner
 import urllib3
-
+import os
 from .node import Node
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -45,24 +48,35 @@ class NodeOnboard(Node):
             if ssh_pub_key.strip():
                 extravars["public_ssh_key"] = ssh_pub_key.strip()
 
-            result = ansible_runner.run(
-                private_data_dir=".",  # runner still needs a dir for internal logs
-                playbook="platina/playbooks/onboard_node.yml",
-                inventory=f"{ip},",
-                extravars=extravars,
-                quiet=True
-            )
+            project_dir = str((Path.cwd() / "platina").resolve())
+            private_data_dir = f"./runner_{ip.replace('.', '_')}"
+            try:
+                os.makedirs(private_data_dir, exist_ok=True)
 
-            if result.rc != 0:
-                stdout_content = result.stdout.read() if hasattr(result.stdout, "read") else str(result.stdout)
-                print(
-                    f"Playbook failed:\n"
-                    f"Status: {result.status}\n"
-                    f"RC: {result.rc}\n"
-                    f"STDOUT:\n{stdout_content}"
+                result = ansible_runner.run(
+                    project_dir=project_dir,
+                    private_data_dir=private_data_dir,  # runner still needs a dir for internal logs
+                    playbook="playbooks/onboard_node.yml",
+                    inventory=f"{ip},",
+                    extravars=extravars,
+                    ident=ip.replace('.', '_'),
+                    quiet=True
                 )
 
-                raise RuntimeError(f"❌ Failed adding the node {ip} to PCC: {result.status} with RC {result.rc}")
+
+
+                if result.rc != 0:
+                    stdout_content = result.stdout.read() if hasattr(result.stdout, "read") else str(result.stdout)
+                    print(
+                        f"Playbook failed:\n"
+                        f"Status: {result.status}\n"
+                        f"RC: {result.rc}\n"
+                        f"STDOUT:\n{stdout_content}"
+                    )
+
+                    raise RuntimeError(f"❌ Failed adding the node {ip} to PCC: {result.status} with RC {result.rc}")
+            finally:
+                shutil.rmtree(private_data_dir, ignore_errors=True)
 
         if add_to_pcc:
             self.add_node(ip=ip, managed=managed, admin_user=ssh_user)
