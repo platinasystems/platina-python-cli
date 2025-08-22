@@ -38,14 +38,16 @@ class NodeOnboard(Node):
             extravars = {
                 "ansible_user": ssh_user,
                 "ansible_host": ip,
-                "ansible_password": password,
-                "ansible_become_password": password,
-                "ansible_ssh_private_key_file": ssh_private_key if ssh_private_key.strip() else None,
                 "user_to_add": 'pcc',
                 "ansible_ssh_common_args": "-o StrictHostKeyChecking=no"
             }
 
-            if ssh_pub_key.strip():
+            if ssh_private_key:
+                extravars["ansible_ssh_private_key_file"] = ssh_private_key
+            if password:
+                extravars["ansible_become_password"] = password
+                extravars["ansible_password"] = password.strip()
+            if ssh_pub_key:
                 extravars["public_ssh_key"] = ssh_pub_key.strip()
 
             project_dir = str((Path.cwd() / "platina").resolve())
