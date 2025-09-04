@@ -62,10 +62,9 @@ class NodeOnboard(Node):
                     inventory=f"{ip},",
                     extravars=extravars,
                     ident=ip.replace('.', '_'),
-                    quiet=True
+                    quiet=True,
+                    envvars={"ANSIBLE_STDOUT_CALLBACK": "yaml"}
                 )
-
-
 
                 if result.rc != 0:
                     stdout_content = result.stdout.read() if hasattr(result.stdout, "read") else str(result.stdout)
