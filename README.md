@@ -140,5 +140,5 @@ python3 platina-cli.py --config ./examples/bare_metal/bare_metal_config-gc.yml -
 
 ### Prepare node
 ```shell
-python3 platina-cli.py --config ./examples/bare_metal/bare_metal_config-gc.yml --operation node-prepare --ssh-pub-key "XXXXXX" --ssh-user XXX --ssh-pwd XXXXXX --ssh-private-key /home/pcc/.ssh/id_ed25519 --managed --node-ips 172.29.0.109-172.29.0.116
+python3 platina-cli.py --config ./examples/bare_metal/bare_metal_config-gc.yml --operation node-prepare --ssh-pub-key "XXXXXX" --ssh-user XXX --ssh-pwd XXXXXX --ssh-port=22 --ssh-private-key /home/pcc/.ssh/id_ed25519 --managed --node-ips 172.29.0.109-172.29.0.116
 ```
