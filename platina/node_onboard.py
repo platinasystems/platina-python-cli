@@ -13,15 +13,28 @@ class NodeOnboard(Node):
         self.session_token = session_token
         self.config = config or {}
 
-    def onboard(self, ips, ssh_user, ssh_pwd, ssh_pub_key, ssh_private_key, ssh_port: int = 22, managed: bool = True, add_to_pcc: bool = True):
+    def onboard(self, ips, ssh_user, ssh_pwd, ssh_pub_key, ssh_private_key, ssh_port: int = 22, managed: bool = True, add_to_pcc: bool = True, roles: str = None):
         import concurrent.futures
         ips = self.parse_ip_list(ips)
+
+        if roles:
+            if isinstance(roles, str):
+                roles = [int(role.strip()) for role in roles.split(',') if role.strip()]
+            elif isinstance(roles, list):
+                roles = [int(role) for role in roles if str(role).strip()]
+            else:
+                roles = None
+
+            if not roles:
+                roles = None
+        else:
+            roles = None
 
         def onboard_single(ip:str):
             ip = ip.strip()
             print(f"Adding the node with IP {ip} to PCC...")
             try:
-                self.onboard_node(ip=ip, ssh_user=ssh_user, ssh_port=ssh_port, password=ssh_pwd, ssh_private_key=ssh_private_key, ssh_pub_key=ssh_pub_key, managed=managed, add_to_pcc = add_to_pcc)
+                self.onboard_node(ip=ip, ssh_user=ssh_user, ssh_port=ssh_port, password=ssh_pwd, ssh_private_key=ssh_private_key, ssh_pub_key=ssh_pub_key, managed=managed, add_to_pcc = add_to_pcc, roles = roles)
             except Exception as e:
                 print(f"❌ Failed to onboard node {ip}: {e}")
             else:
@@ -31,7 +44,7 @@ class NodeOnboard(Node):
             executor.map(onboard_single, ips)
 
 
-    def onboard_node(self, ip: str, ssh_user: str, ssh_port: int, password: str, ssh_private_key:str, ssh_pub_key:str, managed: bool = False, add_to_pcc: bool = True):
+    def onboard_node(self, ip: str, ssh_user: str, ssh_port: int, password: str, ssh_private_key:str, ssh_pub_key:str, managed: bool = False, add_to_pcc: bool = True, roles: list = None):
 
         if managed and ssh_user and ssh_user.strip() != "":
             print(f"Preparing the node with IP {ip} ...")
@@ -81,5 +94,5 @@ class NodeOnboard(Node):
                 print(f'Logs stored in {private_data_dir}')
 
         if add_to_pcc:
-            self.add_node(ip=ip, managed=managed, admin_user=ssh_user, ssh_port=ssh_port)
+            self.add_node(ip=ip, managed=managed, admin_user=ssh_user, ssh_port=ssh_port, roles = roles)
             print(f"Node added to PCC successfully with IP {ip}.")

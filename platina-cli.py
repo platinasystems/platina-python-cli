@@ -70,6 +70,7 @@ def main():
     parser.add_argument('--ssh-port', type=int, default=22, required=False, help='SSH Port')
     parser.add_argument('--ssh-pub-key', type=str, required=False, help='SSH PUB key')
     parser.add_argument('--managed', action='store_true', help='Managed flag')
+    parser.add_argument('--roles', type=str, help='Node Roles (comma-separated)')
 
     args = parser.parse_args()
 
@@ -86,7 +87,7 @@ def main():
         'node-bare-metal-discovery': BareMetal(session_token, config).discovery,
         'node-bare-metal-reimage': BareMetal(session_token, config).reimage,
         'node-reboot': lambda: Node(session_token, config).reboot(bmc_ips=args.bmc_ips.split(',')),
-        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port,  ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, managed=args.managed),
+        'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port,  ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, managed=args.managed, roles=args.roles),
         'node-prepare': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port, ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, add_to_pcc=False),
     }
 

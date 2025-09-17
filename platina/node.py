@@ -72,10 +72,12 @@ class Node(Base):
             except requests.exceptions.RequestException as e:
                 print(f"❌ Connection error: {e}")
 
-    def add_node(self, ip, managed: bool = False, admin_user: str = 'pcc', ssh_port:int = 22):
+    def add_node(self, ip, managed: bool = False, admin_user: str = 'pcc', ssh_port:int = 22, roles: list = None):
         if managed:
             admin_user = ""
         node = {'host': ip, 'managed': managed, 'adminUser': admin_user.strip(), 'roles': [], 'sshPort': ssh_port}
+        if roles:
+            node['roles'] = roles
         print(f"Adding node with IP {ip} to PCC...")
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node", headers=self.get_headers(), json=node, verify=False)
