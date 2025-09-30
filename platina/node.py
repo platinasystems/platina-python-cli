@@ -99,7 +99,7 @@ class Node(Base):
 
     def add_public_key(self, ip_list, pub_key: str = None):
         node_ids = self.get_nodes_from_host(ip_list)
-        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key}
+        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': [pub_key]}
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node/keys", headers=self.get_headers(), json=request, verify=False)
         except requests.exceptions.RequestException as e:
