@@ -13,7 +13,7 @@ class NodeOnboard(Node):
         self.session_token = session_token
         self.config = config or {}
 
-    def onboard(self, ips, ssh_user, ssh_pwd, ssh_pub_key, ssh_private_key, ssh_port: int = 22, managed: bool = True, add_to_pcc: bool = True, roles: str = None):
+    def onboard(self, ips, ssh_user:str = None, ssh_pwd:str = None, ssh_pub_key:str = None, ssh_private_key:str = None, ssh_port: int = 22, managed: bool = True, add_to_pcc: bool = True, roles: str = None):
         import concurrent.futures
         ips = self.parse_ip_list(ips)
 

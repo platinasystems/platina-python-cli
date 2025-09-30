@@ -43,8 +43,9 @@ class Node(Base):
                 node_ids.append(node['Id'])
 
         return node_ids
+    
 
-    def get_nodes_from_bmc(self, ip_list):
+    def get_nodes_from_ip(self, ip_list, label:str):
         nodes_to_ret = list()
         unique_ips = self.parse_ip_list(ip_list)
         try:
@@ -56,10 +57,16 @@ class Node(Base):
         nodes = response.json()['Data']
 
         for node in nodes:
-            if node.get('bmc', '') in unique_ips:
+            if node.get(label, '') in unique_ips:
                 nodes_to_ret.append(node)
 
         return nodes_to_ret
+
+    def get_nodes_from_bmc(self, ip_list):
+        return self.get_nodes_from_ip(ip_list, label='bmc')
+    
+    def get_nodes_from_host(self, ip_list):
+        return self.get_nodes_from_ip(ip_list, label='host')
 
     def reboot(self, bmc_ips):
         node_ids = self.get_node_ids_from_bmc(bmc_ips)
@@ -81,6 +88,20 @@ class Node(Base):
         print(f"Adding node with IP {ip} to PCC...")
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node", headers=self.get_headers(), json=node, verify=False)
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Connection error: {e}")
+            sys.exit(1)
+
+        if response.status_code != 200:
+            print(f"❌ Request failed with status {response.status_code} {response}")
+            sys.exit(1)
+
+
+    def add_public_key(self, ip_list, pub_key: str = None):
+        node_ids = self.get_nodes_from_host(ip_list)
+        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key}
+        try:
+            response = requests.post(f"{self.get_pcc_url()}/pccserver/node/keys", headers=self.get_headers(), json=request, verify=False)
         except requests.exceptions.RequestException as e:
             print(f"❌ Connection error: {e}")
             sys.exit(1)
