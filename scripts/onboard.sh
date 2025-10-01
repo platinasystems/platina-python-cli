@@ -41,7 +41,7 @@ cpu_usage() {
 
 for IP in "${IPS[@]}"; do
     echo "===> Onboarding IP: $IP with roles: $ROLES"
-    python3 platina-cli.py --config config.yml --operation node-onboard --ssh-pub-key "$SSH_PUB_KEY" --ssh-private-key /home/pcc/.ssh/id_rsa --ssh-user $SSH_USER --ssh-pwd $SSH_PWD --managed --roles 18,14 --node-ips "$IP"
+    python3 platina-cli.py --config config.yml --operation node-onboard --ssh-pub-key "$SSH_PUB_KEY" --ssh-private-key /home/pcc/.ssh/id_rsa --ssh-user $SSH_USER --ssh-pwd $SSH_PWD --managed --roles "$ROLES" --node-ips "$IP"
 
     # wait before next IP, unless it's the last
     if [[ "$IP" != "${IPS[-1]}" ]]; then
