@@ -66,7 +66,15 @@ class Node(Base):
         return self.get_nodes_from_ip(ip_list, label='bmc')
     
     def get_nodes_from_host(self, ip_list):
-        return self.get_nodes_from_ip(ip_list, label='host')
+        return self.get_nodes_from_ip(ip_list, label='Host')
+    
+
+    def get_nodes_ids_from_host(self, ip_list):
+        node_ids = list()   
+        for node in self.get_nodes_from_host(ip_list):
+            node_ids.append(node['Id'])
+        return node_ids
+
 
     def reboot(self, bmc_ips):
         node_ids = self.get_node_ids_from_bmc(bmc_ips)
@@ -98,8 +106,14 @@ class Node(Base):
 
 
     def add_public_key(self, ip_list, pub_key: str = None):
-        node_ids = self.get_nodes_from_host(ip_list)
-        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': [pub_key]}
+        print(f"Adding public key to nodes with IPs: {', '.join(ip_list)}")
+        node_ids = self.get_nodes_ids_from_host(ip_list)
+        if len(node_ids) == 0:
+            print("❌ No nodes found with the provided IPs")
+            return
+
+        print(f"Adding public key to nodes with IDs: {node_ids}")
+        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key}
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node/keys", headers=self.get_headers(), json=request, verify=False)
         except requests.exceptions.RequestException as e:
