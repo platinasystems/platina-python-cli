@@ -174,3 +174,5 @@ examples/
 
 # PyPI configuration file
 .pypirc
+.ansible/
+.vscode/
