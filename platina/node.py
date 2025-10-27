@@ -105,15 +105,18 @@ class Node(Base):
             sys.exit(1)
 
 
-    def add_public_key(self, ip_list, pub_key: str = None):
+    def add_public_key(self, ip_list, pub_key: str = None, ssh_user:str = None):
         print(f"Adding public key to nodes with IPs: {', '.join(ip_list)}")
         node_ids = self.get_nodes_ids_from_host(ip_list)
         if len(node_ids) == 0:
             print("❌ No nodes found with the provided IPs")
             return
+        
+        if not ssh_user or ssh_user.strip() == "":
+            ssh_user = ""
 
         print(f"Adding public key to nodes with IDs: {node_ids}")
-        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key}
+        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key, 'ssh_user': ssh_user.strip()}
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node/keys", headers=self.get_headers(), json=request, verify=False)
         except requests.exceptions.RequestException as e:
@@ -123,4 +126,28 @@ class Node(Base):
         if response.status_code != 200:
             print(f"❌ Request failed with status {response.status_code} {response}")
             sys.exit(1)
+
+
+
+    def reapply_role(self, ip_list, role_name: str):
+        print(f"Re-applying roles to nodes with IPs: {', '.join(ip_list)}")
+        node_ids = self.get_nodes_ids_from_host(ip_list)
+        if len(node_ids) == 0:
+            print("❌ No nodes found with the provided IPs")
+            return
+
+
+        for node_id in node_ids:
+            print(f"Re-applying the roles to node with ID: {node_id}")
+            request = {}
+            try:
+                response = requests.post(f"{self.get_pcc_url()}/pccserver/provisions/reapply/{node_id}/{role_name}", headers=self.get_headers(), json=request, verify=False)
+            except requests.exceptions.RequestException as e:
+                print(f"❌ Connection error: {e}")
+                sys.exit(1)
+
+            if response.status_code != 200:
+                print(f"❌ Request failed with status {response.status_code} {response}")
+                sys.exit(1)
+
 

@@ -157,6 +157,13 @@ python3 platina-cli.py --config config.yml --operation node-add --managed --role
 
 ### Add the public key
 ```shell
-python3 platina-cli.py --config config.yml --operation node-pub-key --ssh-pub-key "ssh-rsa XXX" --node-ips 172.20.48.238,172.20.48.229,172.20.48.240
+python3 platina-cli.py --config config.yml --operation node-pub-key --ssh-pub-key "ssh-rsa XXX" --ssh-user platina --node-ips 172.20.48.238,172.20.48.229,172.20.48.240
+
+```
+
+
+### Reapply the role to the node
+```shell
+python3 platina-cli.py --config config.yml --operation node-reapply-role --role-name monitor --node-ips 172.20.48.238,172.20.48.229,172.20.48.240
 
 ```
