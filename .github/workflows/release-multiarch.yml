@@ -1,0 +1,47 @@
+name: Build & Release (multiarch)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runs_on: ubuntu-latest      # GitHub-hosted runner
+          - arch: arm64
+            runs_on: self-hosted        # self-hosted ARM64 runner
+    runs-on: ${{ matrix.runs_on }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build binary
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "Building platina-cli version ${VERSION} for ${{ matrix.arch }}"
+          pyinstaller platina-cli.spec
+          mv dist/platina-cli dist/platina-cli-linux-${{ matrix.arch }}
+
+      - name: Upload binary to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/platina-cli-linux-${{ matrix.arch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PLATINA_GITHUB_TOKEN }}
