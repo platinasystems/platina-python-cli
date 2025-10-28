@@ -5,9 +5,9 @@ A command-line interface for executing operations on PCC (Platina Control Center
 ## Build
 To build a standalone executable using PyInstaller:
 ```bash
-pyinstaller --onefile \
-  --add-data "$(python3 -c 'import pyfiglet; import os; print(os.path.dirname(pyfiglet.__file__) + "/fonts:pyfiglet/fonts")')" \
-  platina-cli.py
+pip install -r requirements.txt
+pip install pyinstaller
+pyinstaller platina-cli.spec
 ```
 
 ## Operations
