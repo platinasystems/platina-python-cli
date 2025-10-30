@@ -116,7 +116,7 @@ class Node(Base):
             ssh_user = ""
 
         print(f"Adding public key to nodes with IDs: {node_ids}")
-        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key, 'ssh_user': ssh_user.strip()}
+        request = {'ids': node_ids, 'keysIds': [], 'rawKeys': pub_key, 'username': ssh_user.strip()}
         try:
             response = requests.post(f"{self.get_pcc_url()}/pccserver/node/keys", headers=self.get_headers(), json=request, verify=False)
         except requests.exceptions.RequestException as e:
