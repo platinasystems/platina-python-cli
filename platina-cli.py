@@ -92,7 +92,7 @@ def main():
         'node-onboard': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port,  ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, managed=args.managed, roles=args.roles),
         'node-prepare': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port, ssh_pwd=args.ssh_pwd, ssh_private_key=args.ssh_private_key, ssh_pub_key=args.ssh_pub_key, add_to_pcc=False, user_to_add = args.pcc_user),
         'node-add': lambda: NodeOnboard(session_token, config).onboard(ips=args.node_ips.split(','), ssh_user=args.ssh_user, ssh_port=args.ssh_port, add_to_pcc=True, managed=args.managed, roles=args.roles),
-        'node-pub-key': lambda: Node(session_token, config).add_public_key(ip_list=args.node_ips.split(','), pub_key=args.ssh_pub_ke, ssh_user=args.ssh_usery),
+        'node-pub-key': lambda: Node(session_token, config).add_public_key(ip_list=args.node_ips.split(','), pub_key=args.ssh_pub_key, ssh_user=args.ssh_user),
         'node-reapply-role': lambda: Node(session_token, config).reapply_role(ip_list=args.node_ips.split(','), role_name=args.role_name),
     }
 
